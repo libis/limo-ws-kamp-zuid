@@ -1,9 +1,4 @@
-import {
-  Component,
-  inject,
-  Input,
-  OnInit,
-} from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -30,12 +25,15 @@ export class PreviewComponent implements OnInit {
   openPreview(): void {
     this.httpClient
       .get(
-        `https://api-eu.hosted.exlibrisgroup.com/almaws/v1/bibs/${this.id}/representations?api_key=YOUR_API_KEY`
+        `https://api-eu.hosted.exlibrisgroup.com/almaws/v1/bibs/${this.id}/representations?apikey=apikey`, { observe: 'body', responseType: 'text'}
       )
-      .subscribe((response) => {
-        console.log('Response:', response);
-
-        //window.open(url, '_blank', 'noopener');
+      .subscribe((response: string) => {
+        const jsonResponse = JSON.parse(response);
+        console.log('JSON Response:', jsonResponse);
+        const deliveryUrl = jsonResponse?.representation[0]?.delivery_url;
+        if (deliveryUrl) {
+          window.open(deliveryUrl, '_blank');
+        }
       });
   }
 }
