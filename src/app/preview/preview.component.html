@@ -5,6 +5,8 @@
 		class="preview-action-button"
 		aria-label="Preview"
 		title="Preview"
+			(click)="openPreview()"
+			[disabled]="!previewUrl"
 	>
 		<mat-icon>visibility</mat-icon>
 	</button>
