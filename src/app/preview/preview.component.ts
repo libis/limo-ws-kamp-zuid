@@ -16,16 +16,32 @@ export class PreviewComponent implements OnInit {
   private httpClient: HttpClient = inject(HttpClient);
 
   private id: string | undefined;
-  public previewUrl = 'https://example.com/preview/';
+  public previewUrl : string | undefined;
 
   ngOnInit() {
     this.id = this.hostComponent?.searchResult?.['@id'].split('/').pop();
+        this.httpClient
+      .get(
+        `https://api-eu.hosted.exlibrisgroup.com/almaws/v1/bibs/${this.id}/representations?apikey=apikey`,
+        { observe: 'body', responseType: 'text' }
+      )
+      .subscribe((response: string) => {
+        const jsonResponse = JSON.parse(response);
+        console.log('JSON Response:', jsonResponse);
+        const deliveryUrl = jsonResponse?.representation[0]?.delivery_url;
+        if (deliveryUrl) {
+          this.previewUrl = deliveryUrl;
+        }
+      });
   }
 
   openPreview(): void {
+          window.open(this.previewUrl, '_blank');
+/*
     this.httpClient
       .get(
-        `https://api-eu.hosted.exlibrisgroup.com/almaws/v1/bibs/${this.id}/representations?apikey=apikey`, { observe: 'body', responseType: 'text'}
+        `https://api-eu.hosted.exlibrisgroup.com/almaws/v1/bibs/${this.id}/representations?apikey=apikey`,
+        { observe: 'body', responseType: 'text' }
       )
       .subscribe((response: string) => {
         const jsonResponse = JSON.parse(response);
@@ -34,6 +50,6 @@ export class PreviewComponent implements OnInit {
         if (deliveryUrl) {
           window.open(deliveryUrl, '_blank');
         }
-      });
+      });*/
   }
 }
